@@ -1,0 +1,45 @@
+#+title: org-web-hugo
+
+I was looking into how I could display a bunch of =org-mode= documents nicely, yes a good =emacs= setup helps, but sometimes you just want to view them in the web. So I started looking around, and turns out [[https://gohugo.io][hugo]] supports =org-mode= by default. So I made a simple =Dockerfile=.
+
+* Usage
+Clone and build the container 
+
+#+begin_src shell :results output
+  git clone https://github.com/jthorpe6/org-web-hugo && \
+      cd org-web-hugo && \
+      docker build -t org-web-hugo .
+#+end_src
+
+When you have built the container, you can then run it with the command
+
+#+begin_src shell :results output
+  docker run \
+	 --rm \
+	 -d \
+	 -p 1313:1313 \
+	 -v /path/to/folder/of/.org/files:/org-web-hugo/content/posts \
+	 org-web-hugo
+#+end_src
+
+Once the container is running, browse to http://localhost:1313
+
+** Changing the theme
+
+ Change this line in the =Dockerfile= to whatever theme you want
+
+ #+begin_src dockerfile
+   RUN git init && \
+     git submodule add https://github.com/theNewDynamic/gohugo-theme-ananke.git themes/ananke && \
+     echo "theme = 'ananke'" >> hugo.toml
+ #+end_src
+
+For example
+
+#+begin_src dockerfile
+  RUN git init && \
+    git submodule add https://github.com/surajmandalcell/potato-dark themes/potato-dark && \
+    echo "theme = 'potato-dark'" >> hugo.toml
+#+end_src
+
+Sometimes in testing themes I found I was missing assets, in that case add another step to copy those.
